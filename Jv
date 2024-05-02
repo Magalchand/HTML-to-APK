@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Short Video App</title>
+    <style>
+        /* CSS styles */
+    </style>
+</head>
+<body>
+    <input type="file" accept="video/*" id="videoInput">
+    <button onclick="uploadVideo()">Upload Video</button>
+    <div id="videoList"></div>
+
+    <script>
+        function uploadVideo() {
+            const fileInput = document.getElementById('videoInput');
+            const file = fileInput.files[0];
+
+            const formData = new FormData();
+            formData.append('video', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+                loadVideos();
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function loadVideos() {
+            fetch('/videos')
+            .then(response => response.json())
+            .then(data => {
+                const videoList = document.getElementById('videoList');
+                videoList.innerHTML = '';
+                data.videos.forEach(video => {
+                    videoList.innerHTML += `<video src="${video}" controls></video><br>`;
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        loadVideos();
+    </script>
+</body>
+</html>
